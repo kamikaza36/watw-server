@@ -1,0 +1,11 @@
+# node modules
+node_modules/
+
+# eslint
+.eslintrc.js
+
+# vscode
+.vscode
+
+# secret
+secret.js
