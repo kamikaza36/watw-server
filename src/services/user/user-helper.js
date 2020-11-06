@@ -11,10 +11,10 @@ const createNewUser = (userEmail, hashedPass) => {
     userSettings: defaultUserSettings,
   })
     .then((user) => {
-      if (user) {
-        return user;
+      if (!user) {
+        throw new ErrorHandler(500, `Failed to create new user for data ${userEmail}`);
       }
-      throw new ErrorHandler(500, `Failed to create new user for data ${userEmail}`);
+      return user;
     })
     .catch((err) => {
       logger.debug(`Error occured while creating user with email ${userEmail}`);
@@ -22,15 +22,51 @@ const createNewUser = (userEmail, hashedPass) => {
       throw err;
     });
 };
+
 const getUserViaEmail = (userEmail) => {
   logger.debug(userEmail);
   return User.findOne({ email: userEmail })
-    .then((user) => user)
+    .then((user) => {
+      if (!user) {
+        throw new ErrorHandler(409, `User with email: ${userEmail} not found.`);
+      }
+      return user;
+    })
     .catch((err) => {
       logger.debug(`Error occured while fetching user via email: ${userEmail}`);
       logger.debug(`${err.message}`);
       throw err;
     });
+};
+
+const getFilteredUserViaEmail = (userEmail) => {
+  logger.debug(userEmail);
+  return User.findOne({ email: userEmail })
+    .then((user) => {
+      if (!user) {
+        throw new ErrorHandler(409, `User with email: ${userEmail} not found.`);
+      }
+      const filteredUser = user;
+      delete filteredUser.password;
+      return filteredUser;
+    })
+    .catch((err) => {
+      logger.debug(`Error occured while fetching user via email: ${userEmail}`);
+      logger.debug(`${err.message}`);
+      throw err;
+    });
+};
+
+const updateUserViaEmail = (userEmail, updateData) => {
+  return User.findOneAndUpdate({ email: userEmail }, updateData)
+    .then(((updatedUser) => {
+      if (!updatedUser) {
+        throw new ErrorHandler(500, `Failed to update new user data for user email: ${userEmail}`);
+      }
+      const filteredUser = updatedUser;
+      delete filteredUser.password;
+      return filteredUser;
+    }));
 };
 
 const deleteUserViaEmail = (userEmail) => {
@@ -47,6 +83,8 @@ const deleteUserViaEmail = (userEmail) => {
 const userHelper = {
   createNewUser,
   getUserViaEmail,
+  getFilteredUserViaEmail,
+  updateUserViaEmail,
   deleteUserViaEmail,
 };
 
