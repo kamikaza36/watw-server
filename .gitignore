@@ -1,5 +1,6 @@
 # node modules
 node_modules/
+package-lock.json
 
 # eslint
 .eslintrc.js
@@ -9,3 +10,4 @@ node_modules/
 
 # secret
 secret.js
+/config/default.json
