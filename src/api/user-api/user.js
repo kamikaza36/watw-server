@@ -1,14 +1,15 @@
 const express = require('express');
 const logger = require('winston');
+const auth = require('../../middleware/user-auth/user-auth');
 
 const router = express.Router();
 const userServices = require('../../services/user/user-services');
 
 /* Get user */
-router.get('', (req, res, next) => {
+router.get('', auth, (req, res, next) => {
   const { email } = req.body;
 
-  logger.debug(`Recived get request ${email}`);
+  logger.debug(`Recived get user request for ${email}`);
 
   return userServices.getFilteredUser(email)
     .then((user) => res.json(user))
@@ -19,10 +20,10 @@ router.get('', (req, res, next) => {
 });
 
 /* Update user */
-router.put('', (req, res, next) => {
+router.put('', auth, (req, res, next) => {
   const { email } = req.body;
 
-  logger.debug(`Recived put request ${email}`);
+  logger.debug(`Recived update user request for ${email}`);
 
   return userServices.getFilteredUser(email)
     .then((filteredUser) => res.json(filteredUser))
@@ -33,10 +34,10 @@ router.put('', (req, res, next) => {
 });
 
 /* Delete user */
-router.delete('', (req, res, next) => {
+router.delete('', auth, (req, res, next) => {
   const { email } = req.body;
 
-  logger.debug(`Recived delete request ${email}`);
+  logger.debug(`Recived delete user request for ${email}`);
 
   return userServices.deleteUser(email)
     .then((sucess) => res.json(sucess))
