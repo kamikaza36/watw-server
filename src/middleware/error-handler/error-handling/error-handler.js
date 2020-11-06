@@ -8,7 +8,6 @@ class ErrorHandler extends Error {
     super();
     this.statusCode = statusCode;
     this.message = message;
-    logger.debug(message);
   }
 }
 
@@ -22,7 +21,7 @@ const handleError = (err) => {
       return mongooseErrorHandlerService(err);
 
     default:
-      return new ErrorHandler(err.statusCode, err.message);
+      return err;
   }
 };
 

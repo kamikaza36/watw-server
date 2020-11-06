@@ -17,14 +17,13 @@ const createNewUser = (userEmail, hashedPass) => {
       return user;
     })
     .catch((err) => {
-      logger.debug(`Error occured while creating user with email ${userEmail}`);
-      logger.debug(err.message);
+      logger.error(`Error occured while creating user with email ${userEmail}`);
+      logger.error(err.message);
       throw err;
     });
 };
 
 const getUserViaEmail = (userEmail) => {
-  logger.debug(userEmail);
   return User.findOne({ email: userEmail })
     .then((user) => {
       if (!user) {
@@ -33,14 +32,13 @@ const getUserViaEmail = (userEmail) => {
       return user;
     })
     .catch((err) => {
-      logger.debug(`Error occured while fetching user via email: ${userEmail}`);
-      logger.debug(`${err.message}`);
+      logger.error(`Error occured while fetching user via email: ${userEmail}`);
+      logger.error(`${err.message}`);
       throw err;
     });
 };
 
 const getFilteredUserViaEmail = (userEmail) => {
-  logger.debug(userEmail);
   return User.findOne({ email: userEmail })
     .then((user) => {
       if (!user) {
@@ -51,8 +49,8 @@ const getFilteredUserViaEmail = (userEmail) => {
       return filteredUser;
     })
     .catch((err) => {
-      logger.debug(`Error occured while fetching user via email: ${userEmail}`);
-      logger.debug(`${err.message}`);
+      logger.error(`Error occured while fetching user via email: ${userEmail}`);
+      logger.error(`${err.message}`);
       throw err;
     });
 };
@@ -70,12 +68,11 @@ const updateUserViaEmail = (userEmail, updateData) => {
 };
 
 const deleteUserViaEmail = (userEmail) => {
-  logger.debug(userEmail);
   return User.deleteOne({ email: userEmail })
     .then((user) => user)
     .catch((err) => {
-      logger.debug(`Error occured while fetching user via email: ${userEmail}`);
-      logger.debug(`${err.message}`);
+      logger.error(`Error occured while fetching user via email: ${userEmail}`);
+      logger.error(`${err.message}`);
       throw err;
     });
 };

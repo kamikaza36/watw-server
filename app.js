@@ -34,7 +34,8 @@ app.use((err, req, res, next) => {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   next();
   // render the error page
-  res.json(handledErr);
+  const response = handledErr;
+  res.status(response.statusCode).json(response);
 });
 
 module.exports = app;
