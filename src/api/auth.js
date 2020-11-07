@@ -5,7 +5,9 @@ const authServices = require('../services/auth/auth-services');
 
 const router = express.Router();
 
-/* Register user */
+// @route POST api/auth/signup
+// @desc User signup
+// @access public
 router.post('/signup', (req, res, next) => {
   const userData = req.body;
 
@@ -22,7 +24,9 @@ router.post('/signup', (req, res, next) => {
     });
 });
 
-/* Login user */
+// @route POST api/auth/login
+// @desc User login
+// @access public
 router.post('/login', (req, res, next) => {
   const userData = req.body;
 
