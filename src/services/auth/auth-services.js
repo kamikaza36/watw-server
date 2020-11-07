@@ -70,7 +70,7 @@ const authLogin = (loginData) => {
     })
     .catch((err) => {
       logger.error(err);
-      throw err;
+      throw new ErrorHandler(401, 'Wrong email or password.');
     });
 };
 
