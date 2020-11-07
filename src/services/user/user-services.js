@@ -1,14 +1,14 @@
+const { diff } = require('deep-diff');
 const logger = require('winston');
 const { ErrorHandler } = require('../../middleware/error-handler/error-handling/error-handler');
 const userHelper = require('./user-helper');
 
 const getFilteredUser = (email) => {
   return userHelper.getFilteredUserViaEmail(email)
-    .then((response) => {
-      if (!response) {
+    .then((user) => {
+      if (!user) {
         throw new ErrorHandler(409, `User with email ${email} not found.`);
       }
-      const user = response._doc;
       return user;
     })
     .catch((err) => {
@@ -17,14 +17,42 @@ const getFilteredUser = (email) => {
     });
 };
 
-const updateUser = (email, updateData) => {
-  return userHelper.updateUserViaEmail(email, updateData)
-    .then((response) => {
-      if (!response) {
+const updateUserData = (email, updateData) => {
+  return userHelper.getFilteredUserViaEmail(email)
+    .then((filteredUser) => {
+      if (!filteredUser) {
         throw new ErrorHandler(409, `User with email ${email} not found.`);
       }
-      const user = response._doc;
-      return user;
+      const validUserObj = JSON.parse(JSON.stringify(filteredUser));
+      const newData = diff(validUserObj, updateData);
+      // Bad practice, find better way of doing
+      const validUpdateData = {};
+      newData.forEach((el) => {
+        let path = '';
+        const value = el.rhs;
+        if (!el.path.includes('updatedAt')) {
+          el.path.forEach((p) => {
+            if (path) {
+              path = `${path}.${p}`;
+            } else {
+              path = p;
+            }
+          });
+          validUpdateData[path] = value;
+        }
+      });
+
+      if (Object.keys(validUpdateData).length === 0) {
+        throw new ErrorHandler(400, 'No new data to update.');
+      }
+
+      return userHelper.updateUserViaEmail(email, validUpdateData)
+        .then((success) => {
+          if (success === 1) {
+            return updateData;
+          }
+          return new ErrorHandler(500, 'Something went wrong with server. Please try again.');
+        });
     })
     .catch((err) => {
       logger.error(err);
@@ -35,11 +63,10 @@ const updateUser = (email, updateData) => {
 const deleteUser = (email) => {
   return userHelper.deleteUserViaEmail(email)
     .then((response) => {
-      const success = response.n === 1 ? { statusCode: 200, message: `User with ${email} successfully deleted.` } : false;
-
-      if (!success) {
+      if (!response === 1) {
         throw new ErrorHandler(409, `User with email ${email} not found.`);
       }
+      const success = response.n === 1 ? { statusCode: 200, message: `User with ${email} successfully deleted.` } : false;
       return success;
     })
     .catch((err) => {
@@ -50,7 +77,7 @@ const deleteUser = (email) => {
 
 const userServices = {
   getFilteredUser,
-  updateUser,
+  updateUserData,
   deleteUser,
 };
 
