@@ -34,7 +34,12 @@ app.use((err, req, res, next) => {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   next();
   // render the error page
-  const response = handledErr;
+  // eslint-disable-next-line prefer-const
+  let response = handledErr;
+  if (!response.statusCode) {
+    response.statusCode = 500;
+    response.message = 'Something went wrong with request. Try again.';
+  }
   res.status(response.statusCode).json(response);
 });
 
