@@ -1,14 +1,14 @@
 const logger = require('winston');
 const mongoose = require('mongoose');
-const { dbUrl, user, pass } = require('./secret');
+const config = require('config');
 
 const dbConnect = () => {
   logger.info('Connecting to database');
 
-  mongoose.connect(dbUrl, {
+  mongoose.connect(config.get('mongoURI'), {
     useNewUrlParser: true,
-    user,
-    pass,
+    user: config.get('mongoUser'),
+    pass: config.get('mongoPass'),
     useUnifiedTopology: true,
   })
     .catch((err) => {
