@@ -71,14 +71,14 @@ const updateUserViaEmail = async (userEmail, updateData) => {
   }
 };
 
-const deleteUserViaEmail = (userEmail) => {
-  return User.deleteOne({ email: userEmail })
-    .then((success) => success)
-    .catch((err) => {
-      logger.error(`Error occured while fetching user via email: ${userEmail}`);
-      logger.error(`${err.message}`);
-      throw err;
-    });
+const deleteUserViaEmail = async (userEmail) => {
+  try {
+    return await User.deleteOne({ email: userEmail });
+  } catch (err) {
+    logger.error(`Error occured while fetching user via email: ${userEmail}`);
+    logger.error(`${err.message}`);
+    throw err;
+  }
 };
 
 const userHelper = {
