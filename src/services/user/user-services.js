@@ -24,8 +24,13 @@ const updateUserData = (email, updateData) => {
         throw new ErrorHandler(409, `User with email ${email} not found.`);
       }
       const validUserObj = JSON.parse(JSON.stringify(filteredUser));
+      /*
+        Bottleneck for server when updating
+        Maybe get ready data straight from frontend
+        On frontend get data ready when they change it 1by1 and send it all together
+        Shouldn't be too heavy for user
+      */
       const newData = diff(validUserObj, updateData);
-      // Bad practice, find better way of doing
       const validUpdateData = {};
       newData.forEach((el) => {
         let path = '';
