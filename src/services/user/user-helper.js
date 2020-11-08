@@ -45,8 +45,8 @@ const getFilteredUserViaEmail = (userEmail) => {
         throw new ErrorHandler(409, `User with email: ${userEmail} not found.`);
       }
       const filteredUser = user;
-      delete filteredUser.password;
-      return filteredUser;
+      delete filteredUser._doc.password;
+      return filteredUser._doc;
     })
     .catch((err) => {
       logger.error(`Error occured while fetching user via email: ${userEmail}`);
@@ -56,20 +56,23 @@ const getFilteredUserViaEmail = (userEmail) => {
 };
 
 const updateUserViaEmail = (userEmail, updateData) => {
-  return User.findOneAndUpdate({ email: userEmail }, updateData)
+  return User.updateOne({
+    email: userEmail,
+  },
+  {
+    $set: updateData,
+  })
     .then(((updatedUser) => {
       if (!updatedUser) {
         throw new ErrorHandler(500, `Failed to update new user data for user email: ${userEmail}`);
       }
-      const filteredUser = updatedUser;
-      delete filteredUser.password;
-      return filteredUser;
+      return updatedUser.ok;
     }));
 };
 
 const deleteUserViaEmail = (userEmail) => {
   return User.deleteOne({ email: userEmail })
-    .then((user) => user)
+    .then((user) => user.ok)
     .catch((err) => {
       logger.error(`Error occured while fetching user via email: ${userEmail}`);
       logger.error(`${err.message}`);

@@ -1,5 +1,6 @@
 const express = require('express');
 const logger = require('winston');
+const { ErrorHandler } = require('../../middleware/error-handler/error-handling/error-handler');
 const auth = require('../../middleware/user-auth/user-auth');
 
 const router = express.Router();
@@ -22,10 +23,12 @@ router.get('', auth, (req, res, next) => {
 /* Update user */
 router.put('', auth, (req, res, next) => {
   const { email } = req.body;
-
+  if (!email) {
+    throw new ErrorHandler(500, 'Email not present in request!');
+  }
   logger.debug(`Recived update user request for ${email}`);
 
-  return userServices.getFilteredUser(email)
+  return userServices.updateUserData(email, req.body)
     .then((filteredUser) => res.json(filteredUser))
     .catch((err) => {
       logger.error(err);
