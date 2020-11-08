@@ -5,18 +5,20 @@ const authServices = require('../services/auth/auth-services');
 
 const router = express.Router();
 
-// @route POST api/auth/signup
-// @desc User signup
+// @route POST api/auth/register
+// @desc User register
 // @access public
-router.post('/signup', async (req, res, next) => {
+router.post('/register', async (req, res, next) => {
+  logger.debug('here');
   const userData = req.body;
 
   if (!userData.email || !userData.password) {
     return res.json(new ErrorHandler(400, 'Invalid data. Please use email and password'));
   }
-  logger.debug(`Recived signup request from ${userData.email}`);
+  logger.debug(`Recived register request from ${userData.email}`);
   try {
     const userAuth = await authServices.authSignup(userData);
+    logger.info(`Registration for ${userData.email} was successful`);
     return res.json(userAuth);
   } catch (err) {
     logger.error(`Error occured ${err.message}`);
