@@ -30,6 +30,9 @@ const updateUserData = async (email, updateData) => {
       Shouldn't be too heavy for user
     */
     const newData = diff(validUserObj, updateData);
+    if (!newData) {
+      throw new ErrorHandler(400, 'No new data to update.');
+    }
     const validUpdateData = {};
     newData.forEach((el) => {
       let path = '';
