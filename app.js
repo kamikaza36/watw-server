@@ -16,10 +16,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const corsMiddleware = (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+  next();
+};
+
+app.use(corsMiddleware);
+
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/api/auth', authRouter);
-
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
@@ -31,6 +39,7 @@ app.use((err, req, res, next) => {
 
   // set locals, only providing error in development
   res.locals.message = err.message;
+  res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   next();
   // render the error page
@@ -40,7 +49,7 @@ app.use((err, req, res, next) => {
     response.statusCode = 500;
     response.message = 'Something went wrong with request. Try again.';
   }
-  res.status(response.statusCode).json(response);
+  res.status(200).json(response);
 });
 
 module.exports = app;

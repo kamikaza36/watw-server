@@ -21,7 +21,10 @@ const handleError = (err) => {
       return mongooseErrorHandlerService(err);
 
     default:
-      return err;
+      return {
+        statusCode: err.statusCode,
+        message: err.message,
+      };
   }
 };
 
