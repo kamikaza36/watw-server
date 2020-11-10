@@ -19,6 +19,7 @@ router.post('/register', async (req, res, next) => {
   try {
     const userAuth = await authServices.authSignup(userData);
     logger.info(`Registration for ${userData.email} was successful`);
+
     return res.json(userAuth);
   } catch (err) {
     logger.error(`Error occured ${err.message}`);
